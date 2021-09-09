@@ -61,15 +61,14 @@ public class HelloController {
 
     @RequestMapping(path = "/student", method = RequestMethod.GET)
     @ResponseBody
-    public String getStudents(int current,
-                              int limit) {
-        System.out.println(current+"--"+limit);
+    public String getStudents(int current, int limit) {
+        System.out.println(current + "--" + limit);
         return "students";
     }
 
     @RequestMapping(path = "/student/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public String getStudents(@PathVariable(name = "id")int id) {
+    public String getStudents(@PathVariable(name = "id") int id) {
         System.out.println(id);
         return "student";
     }
@@ -77,31 +76,31 @@ public class HelloController {
     @RequestMapping(path = "/student", method = RequestMethod.POST)
     @ResponseBody
     public String saveStudent(String name, int id) {
-        System.out.println(name+"--"+id);
+        System.out.println(name + "--" + id);
         return "success";
     }
 
     @RequestMapping(path = "/teacher", method = RequestMethod.GET)
     public ModelAndView getTeacher() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("name","zzkk");
-        modelAndView.addObject("age",12);
+        modelAndView.addObject("name", "zzkk");
+        modelAndView.addObject("age", 12);
         modelAndView.setViewName("/demo/view");
         return modelAndView;
     }
 
     @RequestMapping(path = "/emps", method = RequestMethod.GET)
     @ResponseBody
-    public List<Map<String,Object>> getEmp() {
-        List<Map<String,Object>> list = new ArrayList<>();
-        Map<String,Object> emp1 = new HashMap<>();
-        emp1.put("name","张三");
-        emp1.put("age",18);
-        emp1.put("salary",10000);
-        Map<String,Object> emp2 = new HashMap<>();
-        emp2.put("name","李四");
-        emp2.put("age",22);
-        emp2.put("salary",13000);
+    public List<Map<String, Object>> getEmp() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> emp1 = new HashMap<>();
+        emp1.put("name", "张三");
+        emp1.put("age", 18);
+        emp1.put("salary", 10000);
+        Map<String, Object> emp2 = new HashMap<>();
+        emp2.put("name", "李四");
+        emp2.put("age", 22);
+        emp2.put("salary", 13000);
         list.add(emp1);
         list.add(emp2);
         return list;

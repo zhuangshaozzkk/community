@@ -1,6 +1,8 @@
 package com.zzkk.community;
 
+import com.zzkk.community.dao.DiscussPostMapper;
 import com.zzkk.community.dao.UserMapper;
+import com.zzkk.community.entity.DiscussPost;
 import com.zzkk.community.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author zzkk
@@ -19,8 +22,10 @@ import java.util.Date;
 @SpringBootTest
 @ContextConfiguration(classes = CommunityApplication.class)
 public class CRUDTest {
-    @Resource()
+    @Resource
     private UserMapper userMapper;
+    @Resource
+    private DiscussPostMapper discussPostMapper;
     @Test
     public void testSelectUser(){
         User user = userMapper.selectById(12);
@@ -50,5 +55,14 @@ public class CRUDTest {
         System.out.println(row);
         row = userMapper.updateStatus(150,1);
         System.out.println(row);
+    }
+    @Test
+    public void testSelectPost(){
+        List<DiscussPost> discussPosts = discussPostMapper.selectDiscussPosts(149, 0, 20);
+        for (DiscussPost post : discussPosts) {
+            System.out.println(post);
+        }
+        int rows = discussPostMapper.selectDiscussPostRows(149);
+        System.out.println(rows);
     }
 }
