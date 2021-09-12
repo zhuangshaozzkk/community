@@ -10,9 +10,9 @@ public class Page {
     private int currentPage = 1;
     // 每页显示的条目
     private int limit = 10;
-    // 数据总数
+    // 查询数据总数 用于计算总的页数（total/limit）
     private int total;
-    // 查询的路径
+    // 查询的路径 (复用分页的链接)
     private String path;
 
     public int getCurrentPage() {
@@ -77,7 +77,7 @@ public class Page {
 
     /**
      * @return
-     * @Description //获取起始页码
+     * @Description //获取起始页码（加上边界）
      * @Param
      **/
     public int getFrom() {

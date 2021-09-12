@@ -2,6 +2,8 @@ package com.zzkk.community;
 
 import com.zzkk.community.dao.AlphaDao;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
@@ -14,7 +16,26 @@ import java.util.Date;
 @SpringBootTest
 @ContextConfiguration(classes = CommunityApplication.class)
 class CommunityApplicationTests implements ApplicationContextAware {
-    private  static ApplicationContext context;
+    private static ApplicationContext context;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommunityApplicationTests.class);
+
+    @Test
+    void testNum(){
+        int a = 1000000;
+        long b;
+        b=a;
+        System.out.println(b);
+        System.out.println(a);
+    }
+
+    @Test
+    void testLogger(){
+        LOGGER.error("error");
+        LOGGER.debug("debug");
+        LOGGER.info("info");
+        LOGGER.warn("warn");
+    }
 
     @Test
     void testApplicationContext() {

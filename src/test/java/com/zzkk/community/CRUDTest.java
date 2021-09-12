@@ -1,8 +1,10 @@
 package com.zzkk.community;
 
 import com.zzkk.community.dao.DiscussPostMapper;
+import com.zzkk.community.dao.LoginTicketMapper;
 import com.zzkk.community.dao.UserMapper;
 import com.zzkk.community.entity.DiscussPost;
+import com.zzkk.community.entity.LoginTicket;
 import com.zzkk.community.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +24,8 @@ import java.util.List;
 @SpringBootTest
 @ContextConfiguration(classes = CommunityApplication.class)
 public class CRUDTest {
+    @Resource
+    private LoginTicketMapper loginTicketMapper;
     @Resource
     private UserMapper userMapper;
     @Resource
@@ -64,5 +68,22 @@ public class CRUDTest {
         }
         int rows = discussPostMapper.selectDiscussPostRows(149);
         System.out.println(rows);
+    }
+    @Test
+    public void testInsertLoginTicket(){
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(1);
+        loginTicket.setStatus(0);
+        loginTicket.setTicket("qqq");
+        loginTicket.setExpired(new Date(System.currentTimeMillis()+1000*60));
+        loginTicketMapper.insertLoginTicket(loginTicket);
+    }
+    @Test
+    public void testSelectLoginTicketAndUpdate(){
+        LoginTicket qqq = loginTicketMapper.selectByTicket("qqq");
+        System.out.println(qqq);
+        loginTicketMapper.updateByTicket("qqq",1);
+        LoginTicket qqqq = loginTicketMapper.selectByTicket("qqq");
+        System.out.println(qqqq);
     }
 }

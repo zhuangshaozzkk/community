@@ -35,6 +35,7 @@ public class HomeController {
         page.setPath("/index");
         List<Map<String, Object>> list = new ArrayList<>();
         List<DiscussPost> discussPosts = discussPostService.findDiscussPosts(0, page.getOffset(), page.getLimit());
+        // 将每一个discussPost取出，将用户ID对应的用户取出存在map里，再包装成list返回
         if (discussPosts != null) {
             for (DiscussPost discussPost : discussPosts) {
                 Map<String, Object> map = new HashMap<>();

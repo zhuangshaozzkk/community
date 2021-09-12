@@ -26,6 +26,9 @@ public class MailClient {
     @Value("${spring.mail.username}")
     private String from;
 
+    /**
+     * @Description // 发送邮件
+     **/
     public void sendMail(String to, String subject, String content){
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -33,6 +36,7 @@ public class MailClient {
             helper.setFrom(from);
             helper.setTo(to);
             helper.setSubject(subject);
+            // 设置邮件启用html格式
             helper.setText(content,true);
             mailSender.send(helper.getMimeMessage());
         } catch (MessagingException e) {
