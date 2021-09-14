@@ -1,8 +1,11 @@
 package com.zzkk.community.service;
 
+import com.zzkk.community.dao.CommentMapper;
 import com.zzkk.community.dao.DiscussPostMapper;
 import com.zzkk.community.entity.DiscussPost;
+import com.zzkk.community.util.SensitiveFilter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -23,5 +26,29 @@ public class DiscussPostService {
 
     public int findDiscussPostRows(int userId){
         return discussPostMapper.selectDiscussPostRows(userId);
+    }
+
+    @Resource
+    private SensitiveFilter sensitiveFilter;
+
+    public int addDiscussPost(DiscussPost discussPost){
+        if(discussPost == null){
+            throw  new IllegalArgumentException("参数不能为空");
+        }
+        // 转义成HTML HtmlUtils.htmlEscape
+        discussPost.setTitle(HtmlUtils.htmlEscape(discussPost.getTitle()));
+        discussPost.setContent(HtmlUtils.htmlEscape(discussPost.getContent()));
+        // 过滤敏感字符
+        discussPost.setTitle(sensitiveFilter.filter(discussPost.getTitle()));
+        discussPost.setContent(sensitiveFilter.filter(discussPost.getContent()));
+        return discussPostMapper.insertDiscussPost(discussPost);
+    }
+
+    public DiscussPost findDiscussPostById(int id) {
+        return discussPostMapper.selectDiscussPostById(id);
+    }
+
+    public int updateCommentCountById(int id,int commentCount){
+        return discussPostMapper.updateCommentCountById(id,commentCount);
     }
 }

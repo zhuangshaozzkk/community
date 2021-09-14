@@ -1,9 +1,12 @@
 package com.zzkk.community.controller;
 
 import com.zzkk.community.service.AlphaService;
+import com.zzkk.community.util.CommunityUtil;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import sun.plugin.com.Utils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -104,5 +107,14 @@ public class HelloController {
         list.add(emp1);
         list.add(emp2);
         return list;
+    }
+
+    // ajax请求示例
+    @RequestMapping(path = "/ajax",method = RequestMethod.POST)
+    @ResponseBody
+    public String testAjax(String name,int age){
+        System.out.println(name);
+        System.out.println(age);
+        return CommunityUtil.getJSONString(0,"操作成功",null);
     }
 }

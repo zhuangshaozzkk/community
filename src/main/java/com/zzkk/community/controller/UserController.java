@@ -1,5 +1,6 @@
 package com.zzkk.community.controller;
 
+import com.zzkk.community.annotation.LoginRequired;
 import com.zzkk.community.entity.User;
 import com.zzkk.community.service.UserService;
 import com.zzkk.community.util.CommunityUtil;
@@ -49,11 +50,13 @@ public class UserController {
     @Value("${community.path.upload}")
     private String uploadPath;
 
+    @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
     public String getSettingPage() {
         return "/site/setting";
     }
 
+    @LoginRequired
     @RequestMapping(path = "/upload", method = RequestMethod.POST)
     public String uploadHeader(MultipartFile headerImage, Model model) {
         // 判断是否有上传图片
@@ -120,6 +123,7 @@ public class UserController {
         }
     }
 
+    @LoginRequired
     @RequestMapping(path = "/password", method = RequestMethod.POST)
     public String updatePassword(Model model,String oldPassword , String newPassword,String confirmPassword){
         User user = hostHolder.getUser();

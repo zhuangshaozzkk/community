@@ -1,8 +1,10 @@
 package com.zzkk.community;
 
+import com.zzkk.community.dao.CommentMapper;
 import com.zzkk.community.dao.DiscussPostMapper;
 import com.zzkk.community.dao.LoginTicketMapper;
 import com.zzkk.community.dao.UserMapper;
+import com.zzkk.community.entity.Comment;
 import com.zzkk.community.entity.DiscussPost;
 import com.zzkk.community.entity.LoginTicket;
 import com.zzkk.community.entity.User;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.context.annotation.RequestScope;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -24,6 +27,8 @@ import java.util.List;
 @SpringBootTest
 @ContextConfiguration(classes = CommunityApplication.class)
 public class CRUDTest {
+    @Resource
+    private CommentMapper commentMapper;
     @Resource
     private LoginTicketMapper loginTicketMapper;
     @Resource
@@ -85,5 +90,18 @@ public class CRUDTest {
         loginTicketMapper.updateByTicket("qqq",1);
         LoginTicket qqqq = loginTicketMapper.selectByTicket("qqq");
         System.out.println(qqqq);
+    }
+    @Test
+    public void testInsertDiscussPost(){
+        DiscussPost discussPost = new DiscussPost();
+        discussPost.setCreateTime(new Date());
+        discussPost.setTitle("sdfs");
+        discussPost.setContent("sfaf");
+        discussPost.setUserId(3241);
+        discussPostMapper.insertDiscussPost(discussPost);
+    }
+    @Test
+    public void testSelectComments(){
+        System.out.println("commentMapper.selectCountByEntity(1,276) = " + commentMapper.selectCountByEntity(1, 276));
     }
 }
