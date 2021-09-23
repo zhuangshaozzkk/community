@@ -24,6 +24,7 @@ public class AlphaInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         LOGGER.debug("preHandle"+handler.toString());
+        // return false 取消这次请求
         return true;
     }
 

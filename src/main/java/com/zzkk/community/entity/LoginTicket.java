@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * @author zzkk
  * @ClassName LoginTicket
- * @Description Todo
+ * @Description 登录凭证
  **/
 public class LoginTicket {
     private int id;

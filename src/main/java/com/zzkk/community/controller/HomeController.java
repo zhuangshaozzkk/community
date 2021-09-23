@@ -4,7 +4,9 @@ import com.zzkk.community.entity.DiscussPost;
 import com.zzkk.community.entity.Page;
 import com.zzkk.community.entity.User;
 import com.zzkk.community.service.DiscussPostService;
+import com.zzkk.community.service.LikeService;
 import com.zzkk.community.service.UserService;
+import com.zzkk.community.util.CommunityConstant;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,13 +24,15 @@ import java.util.Map;
  * @Description 示例控制器
  **/
 @Controller
-public class HomeController {
+public class HomeController implements CommunityConstant {
     @Resource
     private DiscussPostService discussPostService;
-
     @Resource
     private UserService userService;
+    @Resource
+    private LikeService likeService;
 
+    // 处理访问首页请求
     @RequestMapping(path = "/index", method = RequestMethod.GET)
     public String getIndexPage(Model model, Page page) {
         page.setTotal(discussPostService.findDiscussPostRows(0));
@@ -39,14 +43,25 @@ public class HomeController {
         if (discussPosts != null) {
             for (DiscussPost discussPost : discussPosts) {
                 Map<String, Object> map = new HashMap<>();
+                // 帖子
                 map.put("post", discussPost);
+                // 用户
                 User user = userService.findUserById(discussPost.getUserId());
                 map.put("user", user);
+                // 帖子点赞数量
+                long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, discussPost.getId());
+                map.put("likeCount",likeCount);
                 list.add(map);
             }
         }
         model.addAttribute("discussPosts", list);
-        model.addAttribute("page",page);
+        // 方法调用前，SpringMVC会自动化实例Model和Page，并将page注入到model
+        // model.addAttribute("page",page);
         return "/index";
+    }
+
+    @RequestMapping(path = "/error",method = RequestMethod.GET)
+    public String getErrorPage(){
+        return "/error/500";
     }
 }

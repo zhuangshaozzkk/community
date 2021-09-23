@@ -25,12 +25,12 @@ public class CommentController {
     @Resource
     private HostHolder hostHolder;
 
+    // 处理插入评论请求 完成操作后要返回帖子，所以路径中要带上帖子id
     @RequestMapping(path = "/add/{discussPostId}",method = RequestMethod.POST)
     public String addComment(@PathVariable("discussPostId") int discussPostId, Comment comment){
             comment.setUserId(hostHolder.getUser().getId());
             comment.setCreateTime(new Date());
             comment.setStatus(0);
-
             commentService.addComment(comment);
             return "redirect:/discussPost/detail/"+discussPostId;
     }

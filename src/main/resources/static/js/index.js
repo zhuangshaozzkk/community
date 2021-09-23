@@ -9,7 +9,7 @@ function publish() {
 	let content = $("#message-text").val();
 	// 发送ajax请求
 	$.post(
-		CONTEXT_PATH+"discussPost/add",
+		CONTEXT_PATH+"/discussPost/add",
 		{"title":title, "content":content},
 		function (data) {
 			data=$.parseJSON(data);
@@ -21,6 +21,7 @@ function publish() {
 			setTimeout(function(){
 				$("#hintModal").modal("hide");
 				if(data.code == 0){
+					// 刷新页面
 					window.location.reload();
 				}
 			}, 2000);

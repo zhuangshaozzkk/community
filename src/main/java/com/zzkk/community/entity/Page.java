@@ -8,7 +8,7 @@ package com.zzkk.community.entity;
 public class Page {
     // 当前页码
     private int currentPage = 1;
-    // 每页显示的条目
+    // 每页显示上限条目
     private int limit = 10;
     // 查询数据总数 用于计算总的页数（total/limit）
     private int total;
@@ -54,18 +54,14 @@ public class Page {
     }
 
     /**
-     * @return
-     * @Description //获取当前页起始行
-     * @Param
+     * @Description //获取当前页偏移行（跳过）
      **/
     public int getOffset() {
         return currentPage * limit - limit;
     }
 
     /**
-     * @return
      * @Description //获取总的页数
-     * @Param
      **/
     public int getTotalNumOfPage() {
         if (total % limit == 0) {
@@ -76,9 +72,7 @@ public class Page {
     }
 
     /**
-     * @return
-     * @Description //获取起始页码（加上边界）
-     * @Param
+     * @Description //获取起始页码
      **/
     public int getFrom() {
         int startPage = currentPage - 2;
@@ -86,9 +80,7 @@ public class Page {
     }
 
     /**
-     * @return
      * @Description //获取截止页码
-     * @Param
      **/
     public int getTo() {
         int endPage = currentPage + 2;

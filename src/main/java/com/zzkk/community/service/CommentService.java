@@ -39,13 +39,16 @@ public class CommentService implements CommunityConstant {
         return commentMapper.selectCountByEntity(entityType,entityId);
     }
 
+    // 增加评论 事务管理
     @Transactional(isolation = Isolation.READ_COMMITTED,propagation = Propagation.REQUIRED)
     public int addComment(Comment comment){
         if(comment == null){
             throw new IllegalArgumentException("参数不能为空！");
         }
+        // 处理字符格式
         comment.setContent(HtmlUtils.htmlEscape(comment.getContent()));
         comment.setContent(sensitiveFilter.filter(comment.getContent()));
+        // 插入评论
         int rows = commentMapper.insertComment(comment);
 
         // 更新帖子（type）评论数量

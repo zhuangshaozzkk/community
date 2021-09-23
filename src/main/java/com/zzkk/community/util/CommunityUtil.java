@@ -32,6 +32,7 @@ public class CommunityUtil {
         return DigestUtils.md5DigestAsHex(key.getBytes());
     }
 
+    // 封装ajax的响应的JSON字符串
     public static String getJSONString(int code, String msg, Map<String,Object> map){
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code",code );

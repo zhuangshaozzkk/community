@@ -79,7 +79,7 @@ public class LoginController implements CommunityConstant {
     }
 
     /**
-     * @Description // 点击激活链接
+     * @Description // 处理账号激活链接
      **/
     @RequestMapping(path = "/activation/{id}/{code}", method = RequestMethod.GET)
     public String activation(Model model, @PathVariable("id") int userId, @PathVariable("code") String activationCode) {
@@ -88,7 +88,7 @@ public class LoginController implements CommunityConstant {
             model.addAttribute("msg", "激活成功，你的账号已经可以正常的使用了！");
             model.addAttribute("target", "/login");
         } else if (result == ACTIVATION_FAILURE) {
-            model.addAttribute("msg", "激活成功，你提供的激活码不正确！");
+            model.addAttribute("msg", "激活失败，你提供的激活码不正确！");
             model.addAttribute("target", "/index");
         } else {
             model.addAttribute("msg", "无效操作，该账号已经激活过了！");
@@ -98,17 +98,18 @@ public class LoginController implements CommunityConstant {
     }
 
     /**
-     * @Description // 获取验证码
+     * @Description // 获取验证码图片 使用response手动输出
      **/
     @RequestMapping(path = "/kaptcha", method = RequestMethod.GET)
     public void getKaptchaImg(HttpServletResponse response, HttpSession session) {
         String text = producer.createText();
-        //将验证字符串存入session
+        // 将验证字符串存入session
         session.setAttribute("kaptcha", text);
-        // 将验证码编码生成图片
+        // 将验证码字符串生成图片
         BufferedImage image = producer.createImage(text);
         // 设置返回图片格式
         response.setContentType("image/png");
+        // 浏览器输出图片
         try {
             ServletOutputStream os = response.getOutputStream();
             ImageIO.write(image,"png",os);
@@ -133,7 +134,9 @@ public class LoginController implements CommunityConstant {
         Map<String, Object> map = userService.login(username, password, expiredSecond);
         if(map.containsKey("ticket")){
             Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
+            // 设置访问有效路径
             cookie.setPath(contextPath);
+            // 设置最大失效时间
             cookie.setMaxAge(expiredSecond);
             response.addCookie(cookie);
             return "redirect:/index";

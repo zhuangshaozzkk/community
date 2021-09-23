@@ -14,7 +14,7 @@ import javax.mail.internet.MimeMessage;
 /**
  * @author zzkk
  * @ClassName MailClient
- * @Description Todo
+ * @Description 发送邮件客户端
  **/
 @Component
 public class MailClient {
@@ -36,7 +36,7 @@ public class MailClient {
             helper.setFrom(from);
             helper.setTo(to);
             helper.setSubject(subject);
-            // 设置邮件启用html格式
+            // 允许邮件启用html格式
             helper.setText(content,true);
             mailSender.send(helper.getMimeMessage());
         } catch (MessagingException e) {

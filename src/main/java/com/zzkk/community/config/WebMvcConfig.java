@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 /**
  * @author zzkk
  * @ClassName WebMvcConfig
- * @Description Todo
+ * @Description interceptor配置 实现接口
  **/
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -26,15 +26,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
     // 处理请求排除静态资源
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(alphaInterceptor)
-                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
+//        registry.addInterceptor(alphaInterceptor)
+//                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
 
+        // 用户登录状态显示header
         registry.addInterceptor(loginTicketInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
-
+        // 拦截用于不能特定路径
         registry.addInterceptor(loginRequiredInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
     }
-
-
 }

@@ -7,12 +7,12 @@ import javax.servlet.http.HttpSession;
 /**
  * @author zzkk
  * @ClassName CookieUtil
- * @Description Todo
+ * @Description 根据name获取cookie值
  **/
 public class CookieUtil {
     public static String getValue(HttpServletRequest request,String name){
-        if(request==null || name==null){
-            throw new IllegalArgumentException("参数为空!");
+        if(request == null || name == null){
+            throw new IllegalArgumentException("参数为空！");
         }
         Cookie[] cookies = request.getCookies();
         if(cookies!=null){

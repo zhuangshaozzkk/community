@@ -24,6 +24,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author zzkk
@@ -50,6 +51,7 @@ public class UserController {
     @Value("${community.path.upload}")
     private String uploadPath;
 
+    // 需要登录才能访问
     @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
     public String getSettingPage() {
@@ -96,7 +98,7 @@ public class UserController {
     }
 
     /**
-     * @Description //将服务器上的图片输出返回
+     * @Description // 访问头像
      **/
     @RequestMapping(path = "/header/{fileName}", method = RequestMethod.GET)
     public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) {
@@ -124,26 +126,16 @@ public class UserController {
     }
 
     @LoginRequired
-    @RequestMapping(path = "/password", method = RequestMethod.POST)
-    public String updatePassword(Model model,String oldPassword , String newPassword,String confirmPassword){
+    @RequestMapping(path = "/updatePassword", method = RequestMethod.POST)
+    public String updatePassword(Model model,String oldPassword , String newPassword){
         User user = hostHolder.getUser();
-        String password = user.getPassword();
-        if(!oldPassword.equals(password)){
-            model.addAttribute("oldPasswordLengthMsg","密码不正确");
+        Map<String, Object> map = userService.updatePassword(user.getId(), oldPassword, newPassword);
+        if(map == null || map.isEmpty()){
+            return "redirect:/logout";
+        }else{
+            model.addAttribute("oldMsg",map.get("oldPasswordMsg"));
+            model.addAttribute("newMsg",map.get("newPasswordMsg"));
             return "/site/setting";
         }
-
-        if(newPassword.length()<8){
-            model.addAttribute("newPasswordLengthMsg","密码长度不能小于8位!");
-            return "/site/setting";
-        }
-
-        if(!newPassword.equals(confirmPassword)){
-            model.addAttribute("unlikeMsg","两次输入的密码不一致!");
-            return "/site/setting";
-        }
-
-        userService.updatePassword(user.getId(),newPassword);
-        return "redirect:/index";
     }
 }

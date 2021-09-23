@@ -17,12 +17,14 @@ import java.util.Properties;
 public class KaptchaConfig {
     @Bean
     public Producer getDefaultKaptcha(){
+        // 实例化实现类
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
         Properties properties = new Properties();
         properties.setProperty("kaptcha.image.width","100");
         properties.setProperty("kaptcha.image.height","40");
         properties.setProperty("kaptcha.textproducer.font.color","black");
         properties.setProperty("kaptcha.textproducer.font.size","32");
+        // 有无噪声干扰
         properties.setProperty("kaptcha.noise.impl","com.google.code.kaptcha.impl.NoNoise");
         properties.setProperty("kaptcha.textproducer.char.string","1234567890qwertyuiopasdfghjklzxcvbnm");
         properties.setProperty("kaptcha.textproducer.char.length","4");

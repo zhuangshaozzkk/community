@@ -34,11 +34,11 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
         if(ticket!=null){
             // 查询凭证
             LoginTicket loginTicket = userService.findLoginTicketByTicket(ticket);
-            // 验证凭证是否有效
+            // 验证凭证是否有效 状态 超时时间
             if(loginTicket!=null&&loginTicket.getStatus()==0&&loginTicket.getExpired().after(new Date())){
                 // 根据凭证查询用户
                 User user = userService.findUserById(loginTicket.getUserId());
-                // 将本次请求的用户信息(线程隔离)保存起来
+                // 将本次请求的用户(线程隔离)保存起来
                 hostHolder.setUser(user);
             }
         }

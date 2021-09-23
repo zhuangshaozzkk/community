@@ -1,13 +1,7 @@
 package com.zzkk.community;
 
-import com.zzkk.community.dao.CommentMapper;
-import com.zzkk.community.dao.DiscussPostMapper;
-import com.zzkk.community.dao.LoginTicketMapper;
-import com.zzkk.community.dao.UserMapper;
-import com.zzkk.community.entity.Comment;
-import com.zzkk.community.entity.DiscussPost;
-import com.zzkk.community.entity.LoginTicket;
-import com.zzkk.community.entity.User;
+import com.zzkk.community.dao.*;
+import com.zzkk.community.entity.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,6 +21,8 @@ import java.util.List;
 @SpringBootTest
 @ContextConfiguration(classes = CommunityApplication.class)
 public class CRUDTest {
+    @Resource
+    private MessageMapper messageMapper;
     @Resource
     private CommentMapper commentMapper;
     @Resource
@@ -103,5 +99,24 @@ public class CRUDTest {
     @Test
     public void testSelectComments(){
         System.out.println("commentMapper.selectCountByEntity(1,276) = " + commentMapper.selectCountByEntity(1, 276));
+    }
+
+    @Test
+    public void testSelectLetters(){
+        List<Message> messages = messageMapper.selectConversations(111, 0, 20);
+        for (Message message : messages) {
+            System.out.println(message);
+        }
+
+        System.out.println(messageMapper.selectConversationCount(111));
+
+        List<Message> messages1 = messageMapper.selectLetters("111_112", 0, 10);
+        for(Message message : messages1){
+            System.out.println(message);
+        }
+
+        System.out.println(messageMapper.selectLettersCount("111_112"));
+
+        System.out.println(messageMapper.selectLettersUnreadCount(131,null));
     }
 }

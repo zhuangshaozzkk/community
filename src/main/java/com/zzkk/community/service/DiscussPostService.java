@@ -31,6 +31,7 @@ public class DiscussPostService {
     @Resource
     private SensitiveFilter sensitiveFilter;
 
+    // 发布帖子
     public int addDiscussPost(DiscussPost discussPost){
         if(discussPost == null){
             throw  new IllegalArgumentException("参数不能为空");
@@ -46,8 +47,9 @@ public class DiscussPostService {
 
     public DiscussPost findDiscussPostById(int id) {
         return discussPostMapper.selectDiscussPostById(id);
-    }
+}
 
+    // 更新帖子的评论
     public int updateCommentCountById(int id,int commentCount){
         return discussPostMapper.updateCommentCountById(id,commentCount);
     }
