@@ -3,6 +3,7 @@ package com.zzkk.community.config;
 import com.zzkk.community.controller.interceptor.AlphaInterceptor;
 import com.zzkk.community.controller.interceptor.LoginRequiredInterceptor;
 import com.zzkk.community.controller.interceptor.LoginTicketInterceptor;
+import com.zzkk.community.controller.interceptor.MessageInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -22,6 +23,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private LoginTicketInterceptor loginTicketInterceptor;
     @Resource
     private LoginRequiredInterceptor loginRequiredInterceptor;
+    @Resource
+    private MessageInterceptor messageInterceptor;
 
     // 处理请求排除静态资源
     @Override
@@ -34,6 +37,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
         // 拦截用于不能特定路径
         registry.addInterceptor(loginRequiredInterceptor)
+                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
+
+        registry.addInterceptor(messageInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
     }
 }

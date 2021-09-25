@@ -30,4 +30,14 @@ public interface CommunityConstant {
      * @Description // 实体类型：评论
      **/
     int ENTITY_TYPE_COMMENT = 2;
+
+    /**
+     * @Description // 实体类型：用户
+     **/
+    int ENTITY_TYPE_USER = 3;
+
+    /**
+     * @Description //系统用户ID
+     **/
+    int SYSTEM_USER_ID = 1;
 }

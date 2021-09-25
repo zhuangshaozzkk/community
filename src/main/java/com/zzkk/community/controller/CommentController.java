@@ -1,7 +1,13 @@
 package com.zzkk.community.controller;
 
+import com.sun.mail.imap.protocol.ID;
 import com.zzkk.community.entity.Comment;
+import com.zzkk.community.entity.DiscussPost;
+import com.zzkk.community.entity.Event;
+import com.zzkk.community.event.EventProducer;
 import com.zzkk.community.service.CommentService;
+import com.zzkk.community.service.DiscussPostService;
+import com.zzkk.community.util.CommunityConstant;
 import com.zzkk.community.util.HostHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,12 +24,18 @@ import java.util.Date;
  **/
 @Controller
 @RequestMapping("/comment")
-public class CommentController {
+public class CommentController implements CommunityConstant {
     @Resource
     private CommentService commentService;
 
     @Resource
     private HostHolder hostHolder;
+
+    @Resource
+    private EventProducer eventProducer;
+
+    @Resource
+    private DiscussPostService discussPostService;
 
     // 处理插入评论请求 完成操作后要返回帖子，所以路径中要带上帖子id
     @RequestMapping(path = "/add/{discussPostId}",method = RequestMethod.POST)
@@ -32,6 +44,23 @@ public class CommentController {
             comment.setCreateTime(new Date());
             comment.setStatus(0);
             commentService.addComment(comment);
+
+            // 触发评论事件
+            Event event = new Event()
+                    .setTopic("comment")
+                    .setUserId(hostHolder.getUser().getId())
+                    .setEntityId(comment.getEntityId())
+                    .setEntityType(comment.getEntityType())
+                    .setData("postId", discussPostId);
+
+            if(comment.getEntityType() == ENTITY_TYPE_POST){
+                DiscussPost target = discussPostService.findDiscussPostById(comment.getEntityId());
+                event.setEntityUserId(target.getUserId());
+            }else if(comment.getEntityType() == ENTITY_TYPE_COMMENT){
+                Comment target = commentService.findCommentById(comment.getEntityId());
+                event.setEntityUserId(target.getUserId());
+            }
+            eventProducer.fireEvent(event);
             return "redirect:/discussPost/detail/"+discussPostId;
     }
 }

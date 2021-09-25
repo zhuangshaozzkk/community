@@ -72,7 +72,7 @@ public class DiscussPostController implements CommunityConstant {
         long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
         model.addAttribute("likeCount",likeCount);
         // 点赞状态
-        int likeStatus = (hostHolder.getUser()==null)?0:likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_COMMENT, post.getId());
+        int likeStatus = (hostHolder.getUser()==null)?0:likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_POST, post.getId());
         model.addAttribute("likeStatus",likeStatus);
         // 分页设置
         page.setPath("/discussPost/detail/"+id);
@@ -91,7 +91,7 @@ public class DiscussPostController implements CommunityConstant {
                 likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT,comment.getId());
                 map.put("likeCount",likeCount);
                 // 点赞状态
-                likeStatus = (hostHolder.getUser()==null)?0:likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_POST, comment.getId());
+                likeStatus = (hostHolder.getUser()==null)?0:likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_COMMENT, comment.getId());
                 map.put("likeStatus",likeStatus);
 
                 // 回复列表（评论的评论）

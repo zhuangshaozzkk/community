@@ -4,17 +4,16 @@ import com.zzkk.community.dao.LoginTicketMapper;
 import com.zzkk.community.dao.UserMapper;
 import com.zzkk.community.entity.LoginTicket;
 import com.zzkk.community.entity.User;
-import com.zzkk.community.util.CommunityConstant;
-import com.zzkk.community.util.CommunityUtil;
-import com.zzkk.community.util.HostHolder;
-import com.zzkk.community.util.MailClient;
+import com.zzkk.community.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.annotation.Resource;
+import java.time.chrono.IsoEra;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,13 +43,22 @@ public class UserService implements CommunityConstant {
     private UserMapper userMapper;
 
     @Resource
-    private LoginTicketMapper loginTicketMapper;
+    private RedisTemplate redisTemplate;
+
+//    @Resource
+//    private LoginTicketMapper loginTicketMapper;
+
 
     /**
      * @Description //根据用户id查找用户
      **/
     public User findUserById(int userId) {
-        return userMapper.selectById(userId);
+        User user = getCache(userId);
+        if(user == null){
+            user = initCache(userId);
+        }
+        return user;
+//        return userMapper.selectById(userId);
     }
 
     /**
@@ -124,6 +132,7 @@ public class UserService implements CommunityConstant {
             return ACTIVATION_REPEAT;
         } else if (user.getActivationCode().equals(activationCode)) {
             userMapper.updateStatus(userId, 1);
+            clearCache(userId);
             return ACTIVATION_SUCCESS;
         } else {
             return ACTIVATION_FAILURE;
@@ -131,32 +140,32 @@ public class UserService implements CommunityConstant {
     }
 
     /**
+     * @return 包含登录失败信息（如果有的话），凭证
      * @Description //登录账号
      * @Param 账号，密码，凭证超时秒数
-     * @return 包含登录失败信息（如果有的话），凭证
      **/
-    public Map<String, Object> login(String username,String password,long expiredSeconds){
+    public Map<String, Object> login(String username, String password, long expiredSeconds) {
         Map<String, Object> map = new HashMap<>();
-        if(StringUtils.isBlank(username)){
-            map.put("usernameMsg","账号不能为空！");
+        if (StringUtils.isBlank(username)) {
+            map.put("usernameMsg", "账号不能为空！");
             return map;
         }
-        if(StringUtils.isBlank(password)){
-            map.put("passwordMsg","密码不能为空！");
+        if (StringUtils.isBlank(password)) {
+            map.put("passwordMsg", "密码不能为空！");
             return map;
         }
         User user = userMapper.selectByName(username);
-        if(user == null){
-            map.put("usernameMsg","该账号不存在！");
+        if (user == null) {
+            map.put("usernameMsg", "该账号不存在！");
             return map;
         }
-        if(user.getStatus()==0){
-            map.put("usernameMsg","该账号未激活！");
+        if (user.getStatus() == 0) {
+            map.put("usernameMsg", "该账号未激活！");
             return map;
         }
-        password = CommunityUtil.md5(password+user.getSalt());
-        if(!password.equals(user.getPassword())){
-            map.put("passwordMsg","密码不正确！");
+        password = CommunityUtil.md5(password + user.getSalt());
+        if (!password.equals(user.getPassword())) {
+            map.put("passwordMsg", "密码不正确！");
             return map;
         }
         //生成凭证
@@ -164,62 +173,94 @@ public class UserService implements CommunityConstant {
         loginTicket.setUserId(user.getId());
         loginTicket.setStatus(0);
         loginTicket.setTicket(CommunityUtil.generateRandString());
-        loginTicket.setExpired(new Date(System.currentTimeMillis()+expiredSeconds*1000));
-        loginTicketMapper.insertLoginTicket(loginTicket);
-        map.put("ticket",loginTicket.getTicket());
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
+//        loginTicketMapper.insertLoginTicket(loginTicket);
+        String redisTicket = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
+        redisTemplate.opsForValue().set(redisTicket, loginTicket);
+        map.put("ticket", loginTicket.getTicket());
         return map;
     }
 
     /**
      * @Description //退出账号
      **/
-    public void logout(String ticket){
-        loginTicketMapper.updateByTicket(ticket,1);
+    public void logout(String ticket) {
+//        loginTicketMapper.updateByTicket(ticket,1);
+        String redisTicket = RedisKeyUtil.getTicketKey(ticket);
+        LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(redisTicket);
+        loginTicket.setStatus(1);
+        redisTemplate.opsForValue().set(redisTicket, loginTicket);
     }
 
     /**
      * @Description // 根据ticket查询用户的凭证
      **/
-    public LoginTicket findLoginTicketByTicket(String ticket){
-        LoginTicket loginTicket = loginTicketMapper.selectByTicket(ticket);
+    public LoginTicket findLoginTicketByTicket(String ticket) {
+//        LoginTicket loginTicket = loginTicketMapper.selectByTicket(ticket);
+        String redisTicket = RedisKeyUtil.getTicketKey(ticket);
+        LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(redisTicket);
         return loginTicket;
     }
 
     /**
      * @Description //根据id修改用户头像url
      **/
-    public int updateHeader(int userId,String headerUrl){
-        return userMapper.updateHeader(userId,headerUrl);
+    public int updateHeader(int userId, String headerUrl) {
+        int row = userMapper.updateHeader(userId, headerUrl);
+        clearCache(userId);
+        return row;
     }
 
     /**
      * @Description //修改密码
      **/
-    public Map<String, Object> updatePassword(int userId,String oldPassword,String newPassword){
+    public Map<String, Object> updatePassword(int userId, String oldPassword, String newPassword) {
         Map<String, Object> map = new HashMap<>();
         // 空值判断
-        if(StringUtils.isBlank(newPassword)){
+        if (StringUtils.isBlank(newPassword)) {
             map.put("oldPasswordMsg", "原密码不能为空!");
             return map;
         }
-        if(StringUtils.isBlank(newPassword)){
+        if (StringUtils.isBlank(newPassword)) {
             map.put("newPasswordMsg", "新密码不能为空!");
             return map;
         }
         // 验证原始密码
         User user = userMapper.selectById(userId);
         oldPassword = CommunityUtil.md5(oldPassword + user.getSalt());
-        if(user==null||!user.getPassword().equals(oldPassword)){
+        if (user == null || !user.getPassword().equals(oldPassword)) {
             map.put("oldPasswordMsg", "原密码输入有误!");
             return map;
         }
         // 更新密码
         newPassword = CommunityUtil.md5(newPassword + user.getSalt());
-        userMapper.updatePassword(userId,newPassword);
+        userMapper.updatePassword(userId, newPassword);
+        clearCache(userId);
         return map;
     }
 
-    public User findUserByName(String name){
-        return  userMapper.selectByName(name);
+    public User findUserByName(String name) {
+        return userMapper.selectByName(name);
+    }
+
+    // 优先从缓存中取值
+    private User getCache(int userId) {
+        String userKey = RedisKeyUtil.getUserKey(userId);
+        User user = (User) redisTemplate.opsForValue().get(userKey);
+        return user;
+    }
+
+    // 取不到初始化，初始化缓存数据
+    private User initCache(int userId) {
+        User user = userMapper.selectById(userId);
+        String userKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.opsForValue().set(userKey, user);
+        return user;
+    }
+
+    // 数据变更时，清除缓存数据
+    private void clearCache(int userId) {
+        String userKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.delete(userKey);
     }
 }
