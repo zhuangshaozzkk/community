@@ -2,7 +2,7 @@ package com.zzkk.community;
 
 import com.zzkk.community.dao.*;
 import com.zzkk.community.entity.*;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;

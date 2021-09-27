@@ -1,7 +1,8 @@
 package com.zzkk.community;
 
 import com.zzkk.community.util.MailClient;
-import org.junit.jupiter.api.Test;
+
+import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.thymeleaf.TemplateEngine;
@@ -23,7 +24,7 @@ public class TestTextMail {
     @Resource
     private  TemplateEngine templateEngine;
 
-    @Test
+
     public void testMail(){
         mailClient.sendMail("zhuangshao0826@163.com","offer","恭喜你被录用！");
     }

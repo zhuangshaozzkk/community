@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
+import java.time.Year;
 import java.util.List;
 
 /**
@@ -52,5 +53,13 @@ public class DiscussPostService {
     // 更新帖子的评论
     public int updateCommentCountById(int id,int commentCount){
         return discussPostMapper.updateCommentCountById(id,commentCount);
+    }
+
+    public int updateType(int id,int type){
+        return discussPostMapper.updateType(id, type);
+    }
+
+    public int updateStatus(int id, int status){
+        return discussPostMapper.updateStatus(id,status);
     }
 }

@@ -2,7 +2,6 @@ package com.zzkk.community;
 
 import com.zzkk.community.dao.AlphaDao;
 import com.zzkk.community.util.SensitiveFilter;
-import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -25,7 +24,7 @@ class CommunityApplicationTests implements ApplicationContextAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunityApplicationTests.class);
 
-    @Test
+
     void testNum(){
         int a = 1000000;
         long b;
@@ -34,7 +33,7 @@ class CommunityApplicationTests implements ApplicationContextAware {
         System.out.println(a);
     }
 
-    @Test
+
     public void testSensitiveFilter(){
         String text = "这里可以读博,可以嫖娼,可以吸毒, 可以***...";
         text  =  sensitiveFilter.filter(text);
@@ -57,7 +56,7 @@ class CommunityApplicationTests implements ApplicationContextAware {
         System.out.println(text);
     }
 
-    @Test
+
     void testLogger(){
         LOGGER.error("error");
         LOGGER.debug("debug");
@@ -65,12 +64,12 @@ class CommunityApplicationTests implements ApplicationContextAware {
         LOGGER.warn("warn");
     }
 
-    @Test
+
     void testApplicationContext() {
         System.out.println(context.getBean("hibernate",AlphaDao.class).select());
     }
 
-    @Test
+
     void testSimpleDateFormat() {
         System.out.println(context.getBean(SimpleDateFormat.class).format(new Date()));
     }

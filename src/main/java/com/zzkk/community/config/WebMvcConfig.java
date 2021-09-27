@@ -1,7 +1,7 @@
 package com.zzkk.community.config;
 
 import com.zzkk.community.controller.interceptor.AlphaInterceptor;
-import com.zzkk.community.controller.interceptor.LoginRequiredInterceptor;
+import com.zzkk.community.controller.interceptor.DataInterceptor;
 import com.zzkk.community.controller.interceptor.LoginTicketInterceptor;
 import com.zzkk.community.controller.interceptor.MessageInterceptor;
 import org.springframework.context.annotation.Configuration;
@@ -21,10 +21,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private AlphaInterceptor alphaInterceptor;
     @Resource
     private LoginTicketInterceptor loginTicketInterceptor;
-    @Resource
-    private LoginRequiredInterceptor loginRequiredInterceptor;
+//    @Resource
+//    private LoginRequiredInterceptor loginRequiredInterceptor;
     @Resource
     private MessageInterceptor messageInterceptor;
+    @Resource
+    private DataInterceptor dataInterceptor;
+
 
     // 处理请求排除静态资源
     @Override
@@ -36,10 +39,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginTicketInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
         // 拦截用于不能特定路径
-        registry.addInterceptor(loginRequiredInterceptor)
-                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
+//        registry.addInterceptor(loginRequiredInterceptor)
+//                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
 
         registry.addInterceptor(messageInterceptor)
+                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
+
+        registry.addInterceptor(dataInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.png","/**/*.jpg","/**/*.jpeg");
     }
 }

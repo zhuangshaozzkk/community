@@ -1,9 +1,15 @@
 package com.zzkk.community;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -14,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @ClassName RedisTest
  * @Description Todo
  **/
+@RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = CommunityApplication.class)
 public class RedisTest {
@@ -82,5 +89,36 @@ public class RedisTest {
         System.out.println("abc".compareTo("abcd"));
         System.out.println("b".compareTo("s"));
         System.out.println("s12a".compareTo("s12a"));
+    }
+
+    // 统计20万个重复数据的独立总数
+    @Test
+    public void testHyperLog(){
+        String redisKey = "test:hll:01";
+        for (int i = 1; i <= 100000; i++) {
+            redisTemplate.opsForHyperLogLog().add(redisKey,i);
+        }
+        for (int i = 1; i <= 100000; i++) {
+            redisTemplate.opsForHyperLogLog().add(redisKey,(int) (Math.random()*100000+1));
+        }
+        System.out.println(redisTemplate.opsForHyperLogLog().size(redisKey));
+    }
+
+    @Test
+    public void testBitMap(){
+        String redisKey = "test:bm:01";
+        redisTemplate.opsForValue().setBit(redisKey,1,true);
+        redisTemplate.opsForValue().setBit(redisKey,4,true);
+        redisTemplate.opsForValue().setBit(redisKey,7,true);
+        for (int i = 0; i < 10; i++) {
+            System.out.println(""+i+redisTemplate.opsForValue().getBit(redisKey, i));
+        }
+        Object count = redisTemplate.execute(new RedisCallback() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+                return redisConnection.bitCount(redisKey.getBytes());
+            }
+        });
+        System.out.println(count);
     }
 }

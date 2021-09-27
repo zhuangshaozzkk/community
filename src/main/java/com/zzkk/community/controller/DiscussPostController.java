@@ -1,9 +1,7 @@
 package com.zzkk.community.controller;
 
-import com.zzkk.community.entity.Comment;
-import com.zzkk.community.entity.DiscussPost;
-import com.zzkk.community.entity.Page;
-import com.zzkk.community.entity.User;
+import com.zzkk.community.entity.*;
+import com.zzkk.community.event.EventProducer;
 import com.zzkk.community.service.CommentService;
 import com.zzkk.community.service.DiscussPostService;
 import com.zzkk.community.service.LikeService;
@@ -41,6 +39,9 @@ public class DiscussPostController implements CommunityConstant {
     @Resource
     private HostHolder hostHolder;
 
+    @Resource
+    private EventProducer eventProducer;
+
     @RequestMapping(path = "/add", method = RequestMethod.POST)
     @ResponseBody
     public String addDiscussPost(String title,String content){
@@ -54,8 +55,16 @@ public class DiscussPostController implements CommunityConstant {
         discussPost.setContent(content);
         discussPost.setTitle(title);
         discussPost.setCreateTime(new Date());
-
         discussPostService.addDiscussPost(discussPost);
+
+        // 触发发帖事件
+        Event event = new Event().setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(discussPost.getId());
+
+        eventProducer.fireEvent(event);
+
         return CommunityUtil.getJSONString(0,"发布成功！");
     }
 
@@ -125,4 +134,41 @@ public class DiscussPostController implements CommunityConstant {
         return "/site/discuss-detail";
     }
 
+
+    // 置顶
+    @RequestMapping(path = "/top",method = RequestMethod.POST)
+    @ResponseBody
+    public String setTop(int id){
+        discussPostService.updateType(id,1);
+        // 更新elasticsearch数据库
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+        return CommunityUtil.getJSONString(0);
+    }
+
+    // 加精
+    @RequestMapping(path = "/wonderful",method = RequestMethod.POST)
+    @ResponseBody
+    public String setWonderful(int id){
+        discussPostService.updateStatus(id,1);
+        // 更新elasticsearch数据库
+        Event event = new Event().setTopic(TOPIC_PUBLISH).setUserId(hostHolder.getUser().getId()).setEntityType(ENTITY_TYPE_POST).setEntityId(id);
+        eventProducer.fireEvent(event);
+        return CommunityUtil.getJSONString(0);
+    }
+
+    // 删除
+    @RequestMapping(path = "/delete",method = RequestMethod.POST)
+    @ResponseBody
+    public String setDelete(int id){
+        discussPostService.updateStatus(id,2);
+        // 更新elasticsearch数据库
+        Event event = new Event().setTopic(TOPIC_PUBLISH).setUserId(hostHolder.getUser().getId()).setEntityType(ENTITY_TYPE_POST).setEntityId(id);
+        eventProducer.fireEvent(event);
+        return CommunityUtil.getJSONString(0);
+    }
 }
