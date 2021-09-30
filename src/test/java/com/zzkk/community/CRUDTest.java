@@ -63,7 +63,7 @@ public class CRUDTest {
     }
     @Test
     public void testSelectPost(){
-        List<DiscussPost> discussPosts = discussPostMapper.selectDiscussPosts(149, 0, 20);
+        List<DiscussPost> discussPosts = discussPostMapper.selectDiscussPosts(149, 0, 20,1);
         for (DiscussPost post : discussPosts) {
             System.out.println(post);
         }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -34,11 +35,11 @@ public class HomeController implements CommunityConstant {
 
     // 处理访问首页请求
     @RequestMapping(path = "/index", method = RequestMethod.GET)
-    public String getIndexPage(Model model, Page page) {
+    public String getIndexPage(Model model, Page page, @RequestParam(name = "orderMode", defaultValue = "0") int orderMode) {
         page.setTotal(discussPostService.findDiscussPostRows(0));
-        page.setPath("/index");
+        page.setPath("/index?orderMode="+orderMode);
         List<Map<String, Object>> list = new ArrayList<>();
-        List<DiscussPost> discussPosts = discussPostService.findDiscussPosts(0, page.getOffset(), page.getLimit());
+        List<DiscussPost> discussPosts = discussPostService.findDiscussPosts(0, page.getOffset(), page.getLimit(),orderMode);
         // 将每一个discussPost取出，将用户ID对应的用户取出存在map里，再包装成list返回
         if (discussPosts != null) {
             for (DiscussPost discussPost : discussPosts) {
@@ -55,6 +56,7 @@ public class HomeController implements CommunityConstant {
             }
         }
         model.addAttribute("discussPosts", list);
+        model.addAttribute("orderMode",orderMode);
         // 方法调用前，SpringMVC会自动化实例Model和Page，并将page注入到model
         // model.addAttribute("page",page);
         return "/index";

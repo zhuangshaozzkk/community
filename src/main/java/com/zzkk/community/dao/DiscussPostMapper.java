@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Bean;
 import java.util.List;
 @Mapper
 public interface DiscussPostMapper {
-    // 查询首页帖子，userId可以选参数（userId = 0）不拼接到sql中
-    List<DiscussPost> selectDiscussPosts(int userId,int offset,int limit);
+    // 查询首页帖子，userId可以选参数（userId = 0）不拼接到sql中  orderMode 排序模式0正常 1热度 分数
+    List<DiscussPost> selectDiscussPosts(int userId,int offset,int limit, int orderMode);
 
     // @Param 注解用于给参数起别名，只有一个参数，同时在if条件中使用必须加上别名
     int selectDiscussPostRows(@Param("userId") int userId);
@@ -25,4 +25,6 @@ public interface DiscussPostMapper {
     int updateType(int id, int type);
 
     int updateStatus(int id, int status);
+
+    int updateScore(int id, double score);
 }

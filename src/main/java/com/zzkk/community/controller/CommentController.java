@@ -9,6 +9,8 @@ import com.zzkk.community.service.CommentService;
 import com.zzkk.community.service.DiscussPostService;
 import com.zzkk.community.util.CommunityConstant;
 import com.zzkk.community.util.HostHolder;
+import com.zzkk.community.util.RedisKeyUtil;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +38,9 @@ public class CommentController implements CommunityConstant {
 
     @Resource
     private DiscussPostService discussPostService;
+
+    @Resource
+    private RedisTemplate redisTemplate;
 
     // 处理插入评论请求 完成操作后要返回帖子，所以路径中要带上帖子id
     @RequestMapping(path = "/add/{discussPostId}",method = RequestMethod.POST)
@@ -70,6 +75,9 @@ public class CommentController implements CommunityConstant {
                         .setEntityId(discussPostId);
 
                 eventProducer.fireEvent(event);
+                // 计算帖子分数
+                String redisKey = RedisKeyUtil.getPostScoreKey();
+                redisTemplate.opsForSet().add(redisKey,discussPostId);
             }
 
             return "redirect:/discussPost/detail/"+discussPostId;

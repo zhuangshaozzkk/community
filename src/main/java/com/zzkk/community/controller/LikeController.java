@@ -4,8 +4,11 @@ import com.zzkk.community.entity.Event;
 import com.zzkk.community.entity.User;
 import com.zzkk.community.event.EventProducer;
 import com.zzkk.community.service.LikeService;
+import com.zzkk.community.util.CommunityConstant;
 import com.zzkk.community.util.CommunityUtil;
 import com.zzkk.community.util.HostHolder;
+import com.zzkk.community.util.RedisKeyUtil;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,13 +24,15 @@ import java.util.Map;
  * @Description Todo
  **/
 @Controller
-public class LikeController {
+public class LikeController implements CommunityConstant {
     @Resource
     private LikeService likeService;
     @Resource
     private HostHolder hostHolder;
     @Resource
     private EventProducer eventProducer;
+    @Resource
+    private RedisTemplate redisTemplate;
 
     @RequestMapping(path = "/like", method = RequestMethod.POST)
     @ResponseBody
@@ -50,6 +55,12 @@ public class LikeController {
                     .setEntityUserId(entityUserId)
                     .setData("postId", postId);
             eventProducer.fireEvent(like);
+        }
+
+        if(entityType == ENTITY_TYPE_POST){
+            // 计算帖子分数
+            String redisKey = RedisKeyUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(redisKey,postId);
         }
 
         return CommunityUtil.getJSONString(0, null, map);
